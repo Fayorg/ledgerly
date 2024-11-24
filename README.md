@@ -7,7 +7,7 @@ Ledgerly is an open-source software to track your finances. It can be use to tra
 Ledgerly is build on top of other open-souce technologies like:
 
 -   [Next.js](https://nextjs.org)
--   [Postgres] (https://www.postgresql.org)
+-   [Postgres](https://www.postgresql.org)
 
 ### Self-host
 

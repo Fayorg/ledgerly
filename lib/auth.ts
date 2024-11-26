@@ -44,7 +44,8 @@ export const authConfig = {
 
             const user = await prisma.user.findUnique({ where: { email } });
             if (!user) throw new InvalidCrendentials();
-            if (!user.emailVerified) throw new EmailNotVerified();
+            if(user.password !== password) throw new InvalidCrendentials();
+            // if (!user.emailVerified) throw new EmailNotVerified();
 
             // TODO: Check password with salt.
             return user;

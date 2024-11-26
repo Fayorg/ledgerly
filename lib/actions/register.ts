@@ -1,32 +1,40 @@
 "use server";
 
-import { z } from "zod";
 import prisma from "@/lib/prisma";
-import { redirect } from "next/navigation";
+import { REGISTER_SCHEMA } from "../validation/register";
+import { FormPayload } from "@/components/form/authentication-form";
+import { signIn } from "@/lib/auth";
+import { isRedirectError } from "next/dist/client/components/redirect";
 
-export async function register(prevState: string | undefined, formData: FormData) {
-    const parsedCredentials = z
-        .object({ email: z.string().email(), password: z.string().min(8), name: z.string().min(2).max(50) })
-        .safeParse(Object.fromEntries(formData.entries()));
+export async function register(formData: FormPayload): Promise<string | void> {
+    const parsedCrendential = REGISTER_SCHEMA.safeParse(formData);
 
-    if (!parsedCredentials.success) return "Invalid email or password";
-    if (formData.get("password") !== formData.get("repeatPassword")) return "Passwords do not match";
-    if (await prisma.user.findUnique({ where: { email: parsedCredentials.data.email } })) return "Email already in use";
+    if (!parsedCrendential.success) return parsedCrendential.error.errors[0].message;
+    if (await prisma.user.findUnique({ where: { email: parsedCrendential.data.email } })) return "Email already in use";
 
     // TODO: add salt and hash password
 
     try {
         await prisma.user.create({
             data: {
-                email: parsedCredentials.data.email,
-                password: parsedCredentials.data.password,
-                name: parsedCredentials.data.name,
+                email: parsedCrendential.data.email,
+                password: parsedCrendential.data.password,
+                name: parsedCrendential.data.name,
             }
         });
+
+        // TODO: This is not the best way and should be changed
+        const formData = new FormData();
+        formData.append("email", parsedCrendential.data.email);
+        formData.append("password", parsedCrendential.data.password);
+
+        await signIn("credentials", formData);
     } catch (error) {
-        console.error(error);
+        // https://github.com/nextauthjs/next-auth/discussions/9389
+        if(isRedirectError(error)) return;
+
+        // TODO: log the error and report it.
+        console.info("ERROR: ", error);
         return "Something went wrong";
-    } finally {
-        redirect("/sign-in");
     }
 }

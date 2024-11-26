@@ -8,18 +8,11 @@ export async function authenticate(prevState: string | undefined, formData: Form
         await signIn('credentials', formData);
     } catch (error) {
         if (error instanceof AuthError) {
-            console.info(error);
-            console.info(error.type);
             if(error instanceof InvalidCrendentials) {
-                return "Custom error handled";
+                return "Incorrect email or password";
             }
-            // switch (error.type) {
-            // case 'CredentialsSignin':
-            //     return 'Invalid credentials.';
-            // default:
-            //     return 'Something went wrong.';
-            // }
-            return "Invalid Credentials";
+
+            return "Something went wrong";
         }
         throw error;
     }

@@ -3,6 +3,7 @@ import NextAuth, { CredentialsSignin } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
 import prisma from './prisma';
+import { PrismaAdapter } from "@auth/prisma-adapter"
 
 export class EmailNotVerified extends CredentialsSignin {
     code = "Email is not verified";
@@ -16,6 +17,7 @@ export const authConfig = {
   pages: {
     signIn: '/sign-in',
   },
+  adapter: PrismaAdapter({ prisma }),
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
@@ -37,7 +39,7 @@ export const authConfig = {
               .object({ email: z.string().email(), password: z.string().min(8) })
               .safeParse(credentials);
 
-            if (!parsedCredentials.success) {console.info(parsedCredentials.error); throw new InvalidCrendentials();}
+            if (!parsedCredentials.success) throw new InvalidCrendentials();
             const { email, password } = parsedCredentials.data;
 
             const user = await prisma.user.findUnique({ where: { email } });
@@ -46,7 +48,7 @@ export const authConfig = {
 
             // TODO: Check password with salt.
             return user;
-          },
+        },
     })
   ],
 } satisfies NextAuthConfig;

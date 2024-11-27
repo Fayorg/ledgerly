@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { REGISTER_SCHEMA } from "../validation/register";
+import { REGISTER_SCHEMA } from "../validation/auth";
 import { FormPayload } from "@/components/form/authentication-form";
 import { signIn } from "@/lib/auth";
 import { isRedirectError } from "next/dist/client/components/redirect";

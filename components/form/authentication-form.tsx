@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { register } from '@/lib/actions/register';
-import { REGISTER_SCHEMA } from '@/lib/validation/register';
+import { REGISTER_SCHEMA } from '@/lib/validation/auth';
 import { useRouter } from 'next/navigation';
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {

@@ -28,15 +28,15 @@ model Workspace {
     userId String
 
     name String
-    plan PLAN   @default(TRIAL)
+    plan PLAN   @default(FREE)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
 
 enum PLAN {
-    TRIAL
-    BASIC
+    FREE
+    ENTRY
 }
 
 model Account {

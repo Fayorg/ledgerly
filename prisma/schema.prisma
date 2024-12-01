@@ -30,6 +30,8 @@ model Workspace {
     name String
     plan PLAN   @default(FREE)
 
+    funds Fund[]
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
@@ -37,6 +39,30 @@ model Workspace {
 enum PLAN {
     FREE
     ENTRY
+}
+
+model Fund {
+    id          String    @id @default(cuid())
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    name        String
+    description String?
+    amount      Float
+    currency    String
+    type        FundType
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+enum FundType {
+    CRYPTO
+    STOCK
+    PROPERTY
+    CASH
+    BANK
+    OTHER
 }
 
 model Account {

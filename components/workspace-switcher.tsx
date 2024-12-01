@@ -5,18 +5,19 @@ import { ChevronsUpDown, GalleryVerticalEnd, Plus } from 'lucide-react';
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
+import { useParams, useRouter } from 'next/navigation';
 
-export function TeamSwitcher({
-	workspaces,
-}: {
-	workspaces: {
-		name: string;
-		// logo: React.ElementType;
-		plan: string;
-	}[];
-}) {
+export function TeamSwitcher({ workspaces }: { workspaces: { id: string; name: string; plan: string }[] }) {
+	const { workspaceId } = useParams();
 	const { isMobile } = useSidebar();
-	const [activeTeam, setActiveTeam] = React.useState(workspaces[0]);
+	const router = useRouter();
+
+	const [activeTeam, setActiveTeam] = React.useState(workspaces.findIndex((w) => w.id === workspaceId));
+
+	function switchWorkspace(index: number) {
+		setActiveTeam(index);
+		router.push(`/w/${workspaces[index].id}`);
+	}
 
 	return (
 		<SidebarMenu>
@@ -28,8 +29,8 @@ export function TeamSwitcher({
 								<GalleryVerticalEnd className="size-4" />
 							</div>
 							<div className="grid flex-1 text-left text-sm leading-tight">
-								<span className="truncate font-semibold">{activeTeam.name}</span>
-								<span className="truncate text-xs">{activeTeam.plan}</span>
+								<span className="truncate font-semibold">{workspaces[activeTeam].name}</span>
+								<span className="truncate text-xs">{workspaces[activeTeam].plan}</span>
 							</div>
 							<ChevronsUpDown className="ml-auto" />
 						</SidebarMenuButton>
@@ -37,7 +38,7 @@ export function TeamSwitcher({
 					<DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg" align="start" side={isMobile ? 'bottom' : 'right'} sideOffset={4}>
 						<DropdownMenuLabel className="text-xs text-muted-foreground">Workspaces</DropdownMenuLabel>
 						{workspaces.map((team, index) => (
-							<DropdownMenuItem key={team.name} onClick={() => setActiveTeam(team)} className="gap-2 p-2">
+							<DropdownMenuItem key={team.name} onClick={() => switchWorkspace(workspaces.findIndex((w) => w.id === team.id))} className="gap-2 p-2">
 								<div className="flex size-6 items-center justify-center rounded-sm border">
 									<GalleryVerticalEnd className="size-4 shrink-0" />
 								</div>

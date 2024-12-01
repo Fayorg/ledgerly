@@ -8,6 +8,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { logout } from '@/lib/actions/logout';
+import { useParams } from 'next/navigation';
 
 const NAVIGATION_MAIN = [
 	{
@@ -37,7 +38,7 @@ const NAVIGATION_MAIN = [
 		items: [
 			{
 				title: 'Accounts',
-				url: '/accounts',
+				url: '/w/$WORKSPACE_ID$/accounts',
 			},
 			{
 				title: 'Account types',
@@ -71,6 +72,8 @@ const NAVIGATION_MAIN = [
 ];
 
 export function ApplicationSidebar({ workspaces, user }: { workspaces: Workspace[]; user: { name: string; email: string; image: string } }) {
+	const { workspaceId } = useParams();
+
 	return (
 		<Sidebar collapsible="icon">
 			<SidebarHeader>
@@ -95,7 +98,7 @@ export function ApplicationSidebar({ workspaces, user }: { workspaces: Workspace
 											{item.items?.map((subItem) => (
 												<SidebarMenuSubItem key={subItem.title}>
 													<SidebarMenuSubButton asChild>
-														<a href={subItem.url}>
+														<a href={subItem.url.replaceAll('$WORKSPACE_ID$', workspaceId?.toString() || '')}>
 															<span>{subItem.title}</span>
 														</a>
 													</SidebarMenuSubButton>

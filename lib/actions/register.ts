@@ -34,7 +34,6 @@ export async function register(formData: FormPayload): Promise<string | void> {
         if(isRedirectError(error)) return;
 
         // TODO: log the error and report it.
-        console.info("ERROR: ", error);
         return "Something went wrong";
     }
 }

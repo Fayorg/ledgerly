@@ -9,8 +9,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { register } from '@/lib/actions/register';
-import { REGISTER_SCHEMA } from '@/lib/validation/auth';
+import { LOGIN_SCHEMA, REGISTER_SCHEMA } from '@/lib/validation/auth';
 import { useRouter } from 'next/navigation';
+import { log } from 'console';
+import { login } from '@/lib/actions/login';
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
 	signup?: boolean;
@@ -43,6 +45,31 @@ export function UserAuthForm({ className, signup = false, ...props }: UserAuthFo
 		const errorMessage = await register({ ...payload });
 		if (errorMessage) {
 			toast({ variant: 'destructive', title: toastTitle, description: errorMessage });
+			setIsPending(false);
+			return;
+		}
+
+		router.push('/');
+
+		setIsPending(false);
+	}
+
+	async function handleLogin(e: React.FormEvent) {
+		e.preventDefault();
+		setIsPending(true);
+
+		const result = LOGIN_SCHEMA.safeParse(payload);
+		if (!result.success) {
+			toast({ variant: 'destructive', title: toastTitle, description: result.error.errors[0].message });
+			setIsPending(false);
+			return;
+		}
+
+		const errorMessage = await login({ ...payload });
+		if (errorMessage) {
+			toast({ variant: 'destructive', title: toastTitle, description: errorMessage });
+			setIsPending(false);
+			return;
 		}
 
 		router.push('/');
@@ -52,7 +79,7 @@ export function UserAuthForm({ className, signup = false, ...props }: UserAuthFo
 
 	return (
 		<div className={cn('grid gap-6', className)} {...props}>
-			<form onSubmit={signup ? handleRegistration : () => {}}>
+			<form onSubmit={signup ? handleRegistration : handleLogin}>
 				<div className="grid gap-2">
 					{signup && (
 						<div className="grid gap-1">

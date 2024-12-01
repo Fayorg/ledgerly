@@ -12,3 +12,8 @@ export const REGISTER_SCHEMA = z
 				ctx.addIssue({ path: ['repeatPassword'], message: 'Passwords do not match', code: 'custom' });
 			}
 		});
+
+export const LOGIN_SCHEMA = z.object({
+    email: z.string().email({ message: 'Invalid email format' }),
+    password: z.string().min(8, { message: 'Incorrect password or email' }),
+});
